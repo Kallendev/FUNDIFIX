@@ -11,9 +11,10 @@ const LandingPage = () => {
       <nav className="flex justify-between items-center px-8 py-6 border-b border-[#1f1f1f]">
         <h1 className="text-2xl font-bold text-[#00FFFF]">FundiFix</h1>
         <div className="space-x-4">
-          <Button onClick={() => nav("/login")} size="lg">
-            🔑 Login
-          </Button>
+          <Button onClick={() => nav("/login")} size="lg" className="bg-[#00FFFF] text-black hover:bg-[#00e6e6]">
+  🔑 Login
+</Button>
+
           <Button
             variant="outline"
             onClick={() => nav("/register")}

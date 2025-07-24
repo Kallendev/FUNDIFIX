@@ -12,7 +12,11 @@ connectDB()
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:5174', // your frontend URL
+  credentials: true
+}));
+
 app.use(express.json());
 
 app.use(morgan('dev'))
