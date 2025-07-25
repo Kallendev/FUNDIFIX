@@ -8,7 +8,7 @@ const FundiDashboard = () => {
 
   const handleLogout = () => {
     localStorage.clear()
-    nav("/login")
+    nav("/")
   }
 
   return (
