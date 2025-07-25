@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import LandingPage from './pages/landing/LandingPage';
@@ -11,6 +10,7 @@ import FundiDashboard from './pages/dashboard/FundiDashboard';
 
 import JobPage from './pages/jobs/JobPage';
 import FundiPage from './pages/fundis/FundiPage';
+import ProfilePage from './pages/fundis/ProfilePage'; // ✅ <-- You forgot this!
 
 const App = () => {
   return (
@@ -29,6 +29,7 @@ const App = () => {
         {/* Extra Pages */}
         <Route path="/jobs" element={<JobPage />} />
         <Route path="/fundis" element={<FundiPage />} />
+        <Route path="/fundi/profile" element={<ProfilePage />} /> {/* ✅ Add this */}
       </Routes>
     </Router>
   );
