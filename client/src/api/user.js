@@ -9,3 +9,12 @@ export const registerUser = async (userData) => {
     throw error.response?.data || { message: 'Registration failed' };
   }
 };
+// src/api/user.js
+export const loginUser = async (credentials) => {
+  try {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Login failed' };
+  }
+};

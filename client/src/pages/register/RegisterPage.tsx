@@ -1,11 +1,10 @@
-// src/pages/register/RegisterPage.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { registerUser } from '@/api/jobs';// ✅ import your register function
+import { registerUser, loginUser } from "@/api/jobs"; // 👈 Make sure loginUser is imported
 
 const RegisterPage = () => {
   const nav = useNavigate();
@@ -13,9 +12,12 @@ const RegisterPage = () => {
     name: "",
     email: "",
     password: "",
+    role: "client", // 👈 Default role
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -23,14 +25,35 @@ const RegisterPage = () => {
     e.preventDefault();
 
     try {
+      // Register the user
       const res = await registerUser(formData);
       console.log("✅ Registered:", res.data);
 
-      // You can redirect or show a success message here
-      nav("/login");
+      // Auto-login the user
+      const loginRes = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log("🔐 Auto-login success:", loginRes);
+
+      // Store token and role
+      localStorage.setItem("token", loginRes.token);
+      localStorage.setItem("role", loginRes.role);
+
+      // Redirect based on role
+      switch (loginRes.role) {
+        case "admin":
+          nav("/admin");
+          break;
+        case "fundi":
+          nav("/fundi");
+          break;
+        default:
+          nav("/client");
+      }
     } catch (error: any) {
-      console.error("❌ Registration error:", error?.response?.data || error.message);
-      // Optionally display error to user
+      console.error("❌ Error:", error?.response?.data || error.message);
+      alert(error?.response?.data?.message || "Registration/Login failed");
     }
   };
 
@@ -52,6 +75,7 @@ const RegisterPage = () => {
                 className="bg-[#1a1a1a] text-white"
               />
             </div>
+
             <div>
               <Label htmlFor="email">Email</Label>
               <Input
@@ -64,6 +88,7 @@ const RegisterPage = () => {
                 className="bg-[#1a1a1a] text-white"
               />
             </div>
+
             <div>
               <Label htmlFor="password">Password</Label>
               <Input
@@ -75,6 +100,22 @@ const RegisterPage = () => {
                 onChange={handleChange}
                 className="bg-[#1a1a1a] text-white"
               />
+            </div>
+
+            {/* 🔽 Role Dropdown */}
+            <div>
+              <Label htmlFor="role">Select Role</Label>
+              <select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="bg-[#1a1a1a] text-white border border-gray-600 rounded-md px-3 py-2 w-full"
+              >
+                <option value="client">Client</option>
+                <option value="fundi">Fundi</option>
+                <option value="admin" disabled>Admin (restricted)</option>
+              </select>
             </div>
 
             <Button

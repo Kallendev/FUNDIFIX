@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import LoginPage from '@/pages/login/LoginPage'
 import RegisterPage from '@/pages/register/RegisterPage'
-import DashboardPage from '@/pages/dashboard/DashboardPage'
+import DashboardPage from '@/pages/dashboard/AdminDashboard'
 import LandingPage from "@/pages/landing/LandingPage"
 
 export const router = createBrowserRouter([
