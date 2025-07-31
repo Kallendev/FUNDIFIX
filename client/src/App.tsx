@@ -17,6 +17,11 @@ import SchedulePage from './pages/fundis/SchedulePage.tsx';
 import EarningsPage from './pages/fundis/EarningsPage.tsx';
 import MessagesPage from './pages/fundis/MessagesPage.tsx';
 
+import PostJobPage from './pages/clients/PostJobPage.tsx';
+import MessagesTab from './pages/clients/MessagesTab.tsx';
+import MyRequestsTab from './pages/clients/MyRequestsTab.tsx';
+import PaymentsTab from './pages/clients/PaymentsTab.tsx';
+
 const App = () => {
   return (
     <Router>
@@ -42,6 +47,13 @@ const App = () => {
         <Route path="/fundi/schedule" element={<SchedulePage />} />
         <Route path="/fundi/earnings" element={<EarningsPage />} />
         <Route path="/fundi/messages" element={<MessagesPage />} />
+        <Route path="/client/post-job" element={<PostJobPage />} />
+        <Route path="/client/messages" element={<MessagesTab />} />
+        <Route path="/client/requests" element={<MyRequestsTab />} />
+        <Route path="/client/payments" element={<PaymentsTab />} />
+
+        {/* Catch-all Route */}
+
       </Routes>
     </Router>
   );

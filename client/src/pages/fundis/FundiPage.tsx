@@ -1,7 +1,7 @@
 
 const FundiPage = () => {
   return (
-    <div className="p-6">
+    <div className="p-6 ">
       <h1 className="text-3xl font-bold mb-4">Find a Fundi 👷‍♂️</h1>
       <p className="mb-6 text-gray-600">
         Here’s a list of skilled fundis available for hire. Browse their profiles and hire the best fit for your job.
