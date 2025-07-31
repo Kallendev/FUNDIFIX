@@ -1,10 +1,10 @@
 const Job = require('../models/Job.js');
 
-// CREATE JOB
+// CREATE JOB — allowed for clients
 const createJob = async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Only admins can create jobs' });
+    if (req.user.role !== 'client') {
+      return res.status(403).json({ message: 'Only clients can create jobs' });
     }
 
     const { title, description, category, budget } = req.body;
@@ -55,7 +55,7 @@ const getJobById = async (req, res) => {
   }
 };
 
-// UPDATE JOB
+// UPDATE JOB — only job creator can update
 const updateJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
@@ -68,7 +68,7 @@ const updateJob = async (req, res) => {
     }
 
     const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
+      new: true,
     });
 
     res.status(200).json({ message: 'Job updated successfully', job: updatedJob });
@@ -77,7 +77,7 @@ const updateJob = async (req, res) => {
   }
 };
 
-// DELETE JOB
+// DELETE JOB — only job creator can delete
 const deleteJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
@@ -101,5 +101,5 @@ module.exports = {
   getAllJobs,
   getJobById,
   updateJob,
-  deleteJob
+  deleteJob,
 };

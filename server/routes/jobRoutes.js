@@ -9,15 +9,17 @@ const {
   deleteJob
 } = require('../controllers/jobControllers');
 
-const { authenticateToken, authorizeAdmin } = require('../middlewares/authorizerAdmin');
+const { authenticateToken } = require('../middlewares/authorizerAdmin');
 
-// Public routes
+// ✅ Public routes
 router.get('/', getAllJobs);
 router.get('/:id', getJobById);
 
-// Protected routes (admin only)
-router.post('/', authenticateToken, authorizeAdmin, createJob);
-router.put('/:id', authenticateToken, authorizeAdmin, updateJob);
-router.delete('/:id', authenticateToken, authorizeAdmin, deleteJob);
+// ✅ Protected routes (any logged-in user)
+router.post('/', createJob);
+
+// ✅ Optional: Only creator or admin can update/delete
+router.put('/:id', authenticateToken, updateJob);
+router.delete('/:id', authenticateToken, deleteJob);
 
 module.exports = router;
