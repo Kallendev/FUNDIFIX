@@ -17,7 +17,8 @@ const ClientsPage = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/users?role=client")
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/users?role=client`);
+
         setClients(res.data)
       } catch (err: any) {
         setError("Failed to fetch clients.")

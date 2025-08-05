@@ -16,7 +16,7 @@ router.get('/', getAllJobs);
 router.get('/:id', getJobById);
 
 // ✅ Protected routes (any logged-in user)
-router.post('/', createJob);
+router.post('/', authenticateToken, createJob);
 
 // ✅ Optional: Only creator or admin can update/delete
 router.put('/:id', authenticateToken, updateJob);

@@ -77,6 +77,7 @@ const FundiDashboard = () => {
           </Card>
 
           {/* Profile */}
+                <div className="z-10 relative">
           <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">
             <CardHeader>
               <CardTitle className="text-orange-400">👤 Profile</CardTitle>
@@ -85,12 +86,18 @@ const FundiDashboard = () => {
               <p>View and edit your fundi profile.</p>
               <Button
                 className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => nav("/fundi/profile")}
+                onClick={() => {
+                  console.log("Navigating to /fundi/profile");
+                  nav("/fundi/profile");
+                }}
               >
                 Go to Profile
               </Button>
             </CardContent>
           </Card>
+        </div>
+
+
 
           {/* Messages */}
           <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">

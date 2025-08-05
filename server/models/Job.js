@@ -1,20 +1,19 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const jobSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  category: String,
-  budget: Number,
-  location: String,
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  category: { type: String, required: true },
+  budget: { type: Number, required: true },
+  location: { type: String, required: true },
   status: {
     type: String,
     enum: ['open', 'assigned', 'completed'],
     default: 'open',
   },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-}, { timestamps: true })
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // client
+  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // fundi
+}, { timestamps: true });
 
-module.exports = mongoose.model('Job', jobSchema)
-
+module.exports = mongoose.model('Job', jobSchema);
 

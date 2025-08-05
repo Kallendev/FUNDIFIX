@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { registerUser, loginUser } from "@/api/jobs"; // 👈 Make sure loginUser is imported
+import { registerUser, loginUser } from "@/api/jobs";
 
 const RegisterPage = () => {
   const nav = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "client", // 👈 Default role
+    role: "client", // Default role
   });
 
   const handleChange = (
@@ -25,22 +27,18 @@ const RegisterPage = () => {
     e.preventDefault();
 
     try {
-      // Register the user
       const res = await registerUser(formData);
       console.log("✅ Registered:", res.data);
 
-      // Auto-login the user
       const loginRes = await loginUser({
         email: formData.email,
         password: formData.password,
       });
       console.log("🔐 Auto-login success:", loginRes);
 
-      // Store token and role
       localStorage.setItem("token", loginRes.token);
       localStorage.setItem("role", loginRes.role);
 
-      // Redirect based on role
       switch (loginRes.role) {
         case "admin":
           nav("/admin");
@@ -61,7 +59,9 @@ const RegisterPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#0c0c0c] text-white px-4">
       <Card className="w-full max-w-md shadow-xl border border-orange-500 rounded-2xl bg-[#131313]">
         <CardContent className="p-8 space-y-6">
-          <h2 className="text-2xl font-bold text-center text-orange-400">📝 Create Account</h2>
+          <h2 className="text-2xl font-bold text-center text-orange-400">
+            📝 Create Account
+          </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -89,20 +89,25 @@ const RegisterPage = () => {
               />
             </div>
 
-            <div>
+            <div className="relative">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
-                className="bg-[#1a1a1a] text-white"
+                className="bg-[#1a1a1a] text-white pr-10"
               />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                 className="absolute inset-y-0 right-3 flex items-center top-[20px] text-[#00bfff] cursor-pointer"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </span>
             </div>
 
-            {/* 🔽 Role Dropdown */}
             <div>
               <Label htmlFor="role">Select Role</Label>
               <select
@@ -114,7 +119,9 @@ const RegisterPage = () => {
               >
                 <option value="client">Client</option>
                 <option value="fundi">Fundi</option>
-                <option value="admin" disabled>Admin (restricted)</option>
+                <option value="admin" disabled>
+                  Admin (restricted)
+                </option>
               </select>
             </div>
 

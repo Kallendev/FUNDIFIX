@@ -13,8 +13,11 @@ const PostJobPage = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setJobData({ ...jobData, [e.target.name]: e.target.value });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setJobData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +26,7 @@ const PostJobPage = () => {
     setMessage('');
 
     try {
-      const response = await axios.post('../api/jobs', jobData); // adjust endpoint as needed
+      await axios.post('/api/jobs', jobData);
       setMessage('✅ Job posted successfully!');
       setJobData({ title: '', description: '', category: '', budget: '', location: '' });
     } catch (error) {
@@ -61,15 +64,23 @@ const PostJobPage = () => {
             required
           />
 
-          <input
-            type="text"
+          <select
             name="category"
-            placeholder="Category (e.g., Plumbing, Electrical)"
             value={jobData.category}
             onChange={handleChange}
             className="w-full p-3 bg-[#1a1f36] border border-[#2b2f4a] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             required
-          />
+          >
+            <option value="" disabled>Select a category</option>
+            <option value="Plumbing">Plumbing</option>
+            <option value="Electrical">Electrical</option>
+            <option value="Carpentry">Carpentry</option>
+            <option value="Painting">Painting</option>
+            <option value="Masonry">Masonry</option>
+            <option value="Cleaning">Cleaning</option>
+            <option value="Landscaping">Landscaping</option>
+            <option value="Mechanic">Mechanic</option>
+          </select>
 
           <input
             type="number"
@@ -83,13 +94,26 @@ const PostJobPage = () => {
 
           <input
             type="text"
+            id="location"
             name="location"
-            placeholder="Location"
+            placeholder="Type or select location"
             value={jobData.location}
             onChange={handleChange}
-            className="w-full p-3 bg-[#1a1f36] border border-[#2b2f4a] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            list="location-options"
+            className="w-full p-3 bg-[#1a1f36] border border-[#2b2f4a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
             required
           />
+
+          <datalist id="location-options">
+            <option value="Nairobi" />
+            <option value="Mombasa" />
+            <option value="Kisumu" />
+            <option value="Nakuru" />
+            <option value="Eldoret" />
+            <option value="Thika" />
+            <option value="Machakos" />
+            <option value="Meru" />
+          </datalist>
 
           <button
             type="submit"

@@ -7,9 +7,9 @@ const createJob = async (req, res) => {
       return res.status(403).json({ message: 'Only clients can create jobs' });
     }
 
-    const { title, description, category, budget } = req.body;
+    const { title, description, category, budget,location } = req.body;
 
-    if (!title || !description || !category || budget === undefined) {
+    if (!title || !description ||!location || !category || budget === undefined) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -22,6 +22,7 @@ const createJob = async (req, res) => {
       description,
       category,
       budget,
+      location,
       createdBy: req.user.userId,
     });
 

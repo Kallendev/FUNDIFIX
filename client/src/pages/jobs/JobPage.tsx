@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '@/api/axios';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,12 +23,25 @@ const JobPage = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/jobs');
+
+      const stored = localStorage.getItem('timenode_auth');
+      const token = stored ? JSON.parse(stored).token : null;
+
+      if (!token) {
+        setError('🔒 Unauthorized. Please log in.');
+        return;
+      }
+
+      const res = await axios.get('/jobs'); // Axios instance attaches token
       setJobs(res.data.jobs || []);
       setError('');
     } catch (err: any) {
       console.error(err);
-      setError('⚠️ Failed to load jobs. Please check your network or try again.');
+      if (err.response?.status === 401) {
+        setError('🔒 Session expired or unauthorized. Please log in again.');
+      } else {
+        setError('⚠️ Failed to load jobs. Please check your network or try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -62,7 +76,9 @@ const JobPage = () => {
       {error && (
         <div className="bg-red-100 text-red-600 p-4 rounded-lg mb-4 flex items-center justify-between">
           <span>{error}</span>
-          <Button onClick={fetchJobs} className="ml-4">Retry</Button>
+          <Button onClick={fetchJobs} className="ml-4">
+            Retry
+          </Button>
         </div>
       )}
 
