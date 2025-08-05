@@ -1,7 +1,3 @@
-Here’s a complete example of a **Fundifix README.md** in a professional format, tailored for your MERN Stack project using JWT, Clerk, Socket.io, Tailwind CSS, and shadcn/ui – and written as a TypeScript (TSX-ready) React + Express application:
-
----
-
 # 🛠️ FundiFix - Handyman Booking Platform
 
 **FundiFix** is a full-stack MERN (MongoDB, Express, React, Node.js) web application that connects clients with local fundis (handymen) for various services. It includes real-time chat, secure authentication (JWT/Clerk), admin dashboard, MPESA payments, job posting, and fundi profiles.
