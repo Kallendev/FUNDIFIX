@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { createJob } from '@/api/jobs';
+
+
+
 
 const PostJobPage = () => {
   const [jobData, setJobData] = useState({
@@ -26,12 +29,12 @@ const PostJobPage = () => {
     setMessage('');
 
     try {
-      await axios.post('/api/jobs', jobData);
+      await createJob(jobData); // ✅ token handled by axios interceptor
       setMessage('✅ Job posted successfully!');
       setJobData({ title: '', description: '', category: '', budget: '', location: '' });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      setMessage('❌ Failed to post job.');
+      setMessage(error?.message || '❌ Failed to post job.');
     } finally {
       setLoading(false);
     }
