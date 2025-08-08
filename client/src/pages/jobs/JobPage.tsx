@@ -24,15 +24,8 @@ const JobPage = () => {
     try {
       setLoading(true);
 
-      const stored = localStorage.getItem('timenode_auth');
-      const token = stored ? JSON.parse(stored).token : null;
-
-      if (!token) {
-        setError('🔒 Unauthorized. Please log in.');
-        return;
-      }
-
-      const res = await axios.get('/jobs'); // Axios instance attaches token
+      // No token check — allow public fetching
+      const res = await axios.get('/jobs');
       setJobs(res.data.jobs || []);
       setError('');
     } catch (err: any) {
