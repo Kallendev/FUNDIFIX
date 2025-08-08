@@ -1,35 +1,41 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Client {
-  _id: string
-  name: string
-  email: string
-  role: string
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
 }
 
 const ClientsPage = () => {
-  const [clients, setClients] = useState<Client[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/users?role=client`);
+        const token = localStorage.getItem("token"); // Adjust if you store token elsewhere
 
-        setClients(res.data)
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/users/clients`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setClients(res.data);
       } catch (err: any) {
-        setError("Failed to fetch clients.")
-        console.error("Error fetching clients", err)
+        setError("Failed to fetch clients.");
+        console.error("Error fetching clients", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchClients()
-  }, [])
+    fetchClients();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0c0f1c] text-white py-10 px-4">
@@ -64,7 +70,7 @@ const ClientsPage = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ClientsPage
+export default ClientsPage;
