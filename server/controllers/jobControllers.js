@@ -56,6 +56,27 @@ const getJobById = async (req, res) => {
   }
 };
 
+// controllers/jobControllers.js (add this function somewhere near the others)
+
+const getJobsByClient = async (req, res) => {
+  try {
+    // req.user.userId is populated by your authenticateToken middleware
+    const clientId = req.user?.userId;
+    if (!clientId) {
+      return res.status(400).json({ message: 'Client id not found in token' });
+    }
+
+    // Find jobs created by this client
+    const jobs = await Job.find({ createdBy: clientId }).populate('createdBy assignedTo');
+
+    // Keep same response shape as getAllJobs (object with jobs property)
+    return res.status(200).json({ jobs });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+
 // UPDATE JOB — only job creator can update
 const updateJob = async (req, res) => {
   try {
@@ -103,4 +124,5 @@ module.exports = {
   getJobById,
   updateJob,
   deleteJob,
+  getJobsByClient, // Export the new function
 };

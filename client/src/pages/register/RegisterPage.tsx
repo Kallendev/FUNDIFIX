@@ -133,7 +133,7 @@ const RegisterPage = () => {
             </Button>
           </form>
 
-          <div className="text-center text-sm mt-4">
+          <div className="text-center text-white text-sm mt-4">
             Already have an account?{" "}
             <span
               onClick={() => nav("/login")}

@@ -89,6 +89,17 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// ✅ Get all fundis
+const getAllFundis = async (req, res) => {
+  try {
+    const fundis = await User.find({ role: "fundi" }).select("-password");
+    res.status(200).json(fundis);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 // ✅ Get user by ID
 const getUserById = async (req, res) => {
   try {
@@ -145,6 +156,7 @@ module.exports = {
   loginUser,
   getAllUsers,
   getUserById,
+  getAllFundis,
   updateUser,
   deleteUser
 };

@@ -112,7 +112,7 @@ const LoginPage = () => {
             </Button>
           </form>
 
-          <div className="text-center text-sm mt-4">
+          <div className="text-center text-sm mt-4 text-white">
             Don’t have an account?{" "}
             <span
               onClick={() => nav("/register")}

@@ -5,8 +5,10 @@ const {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  getAllFundis // ✅ added
 } = require('../controllers/userControllers');
+
 const { authenticateToken, authorizeAdmin } = require('../middlewares/authorizerAdmin');
 
 const router = express.Router();
@@ -15,12 +17,15 @@ const router = express.Router();
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 
+// ✅ Get all fundis (public or protected — here I made it public)
+router.get('/fundis', getAllFundis);
+
 // Admin-protected route to get all users
 router.get('/all', authenticateToken, authorizeAdmin, getAllUsers);
 
 // Protected routes
 router.get('/:id', authenticateToken, getUserById);
 router.put('/:id', authenticateToken, updateUser);
-router.delete('/:id', authenticateToken, authorizeAdmin, deleteUser); // optionally admin-only
+router.delete('/:id', authenticateToken, authorizeAdmin, deleteUser);
 
 module.exports = router;
