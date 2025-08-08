@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -9,24 +10,30 @@ const ProfilePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem('userInfo');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser?.email) {
-          setUser(parsedUser);
-        } else {
-          navigate('/login'); // fallback if parsedUser is invalid
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Use your token key here
+        if (!token) {
+          navigate('/login');
+          return;
         }
-      } else {
-        navigate('/login'); // fallback if nothing stored
+
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUser(res.data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        navigate('/login');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Error reading userInfo:', err);
-      navigate('/login');
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    fetchUserProfile();
   }, [navigate]);
 
   if (loading) {

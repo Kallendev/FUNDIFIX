@@ -7,7 +7,8 @@ const {
   updateUser,
   deleteUser,
   getAllFundis,
-  getAllClients // ✅ added
+  getAllClients,
+  getUserProfile // ✅ added
 } = require('../controllers/userControllers');
 
 const { authenticateToken, authorizeAdmin } = require('../middlewares/authorizerAdmin');
@@ -24,6 +25,7 @@ router.get('/fundis', getAllFundis);
 // Admin-protected route to get all users
 router.get('/all', authenticateToken, authorizeAdmin, getAllUsers);
 router.get('/clients', authenticateToken, authorizeAdmin, getAllClients);
+router.get('/profile', authenticateToken, getUserProfile);
 
 // Protected routes
 router.get('/:id', authenticateToken, getUserById);
