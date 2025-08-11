@@ -161,6 +161,63 @@ const updateUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+const updateUserProfile = async (req, res) => {
+  try {
+    console.log('🔍 Incoming body:', req.body);
+    console.log('📷 Incoming file:', req.file);
+
+    if (!req.user?.userId) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // ✅ Name
+    if (req.body.name?.trim()) {
+      user.name = req.body.name.trim();
+    }
+
+    // ✅ Skills - handle array or comma-separated string
+    if (req.body.skills) {
+      if (Array.isArray(req.body.skills)) {
+        user.skills = req.body.skills.map(s => s.trim()).filter(Boolean);
+      } else {
+        user.skills = req.body.skills
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
+    }
+
+    // ✅ Experience & Location
+    if (req.body.experience?.trim()) {
+      user.experience = req.body.experience.trim();
+    }
+    if (req.body.location?.trim()) {
+      user.location = req.body.location.trim();
+    }
+
+    // ✅ Profile Image (absolute URL)
+    if (req.file) {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      user.profileImage = `${baseUrl}/uploads/${req.file.filename}`;
+    }
+
+    const updatedUser = await user.save();
+    const { password, ...safeUser } = updatedUser._doc;
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: safeUser
+    });
+
+  } catch (error) {
+    console.error('❌ Update profile error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 
 // ✅ Delete user
 const deleteUser = async (req, res) => {
@@ -185,5 +242,6 @@ module.exports = {
   getAllClients,
   getUserProfile,
   updateUser,
+  updateUserProfile,
   deleteUser
 };

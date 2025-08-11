@@ -16,6 +16,11 @@ declare module '@/api/jobs' {
   export function loginUser(userData: any): Promise<any>;
 }
 
+declare module '@/api/user' {
+  export function updateUserProfile(payload: any): Promise<any>;
+  // add more exports if your user API has other functions
+}
+
 declare module '@/api/axios' {
   import axios from 'axios';
   export default axios;
