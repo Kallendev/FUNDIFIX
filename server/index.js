@@ -14,7 +14,8 @@ const app = express()
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://fundifix-kallendevs-projects.vercel.app'
+  'https://fundifix-kallendevs-projects.vercel.app',
+  'https://fundifix.vercel.app' // final production URL
 
 ];
 
