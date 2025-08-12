@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 
 const dummyConversations = [
   { id: "1", name: "Alice", messages: [{ from: "fundi", text: "Hello!" }, { from: "Alice", text: "Hi, I need help!" }] },
