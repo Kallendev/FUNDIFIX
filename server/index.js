@@ -12,10 +12,26 @@ connectDB()
 
 const app = express()
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://fundifix-kallendevs-projects.vercel.app'
+
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173', // your frontend URL
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: ['Content-Type', 'Authorization'] 
 }));
+
+
 
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
