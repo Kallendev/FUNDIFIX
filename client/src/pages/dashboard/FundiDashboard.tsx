@@ -1,14 +1,41 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
+import { useEffect, useState } from "react";
 
 const FundiDashboard = () => {
   const nav = useNavigate();
+  const [fundiName, setFundiName] = useState("Fundi");
+  const [profileImage, setProfileImage] = useState(null);
+  const [jobsCompleted, setJobsCompleted] = useState(0);
+  const [rating, setRating] = useState(0);
+  const [availability, setAvailability] = useState("Available Now");
+
+  useEffect(() => {
+    // Example: fetching from localStorage or API
+    const storedName = localStorage.getItem("fundiName");
+    const storedImage = localStorage.getItem("fundiImage");
+    const storedJobs = localStorage.getItem("jobsCompleted");
+    const storedRating = localStorage.getItem("fundiRating");
+    const storedAvailability = localStorage.getItem("fundiAvailability");
+
+    if (storedName) setFundiName(storedName);
+    if (storedImage) setProfileImage(storedImage);
+    if (storedJobs) setJobsCompleted(parseInt(storedJobs));
+    if (storedRating) setRating(parseFloat(storedRating));
+    if (storedAvailability) setAvailability(storedAvailability);
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear();
     nav("/");
+  };
+
+  const toggleAvailability = () => {
+    const newStatus =
+      availability === "Available Now" ? "Unavailable" : "Available Now";
+    setAvailability(newStatus);
+    localStorage.setItem("fundiAvailability", newStatus);
   };
 
   return (
@@ -16,7 +43,29 @@ const FundiDashboard = () => {
       <div className="max-w-6xl mx-auto">
         {/* Top Bar */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-extrabold text-white">👷 Fundi Dashboard</h1>
+          <div className="flex items-center gap-4">
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt="Profile"
+                className="w-12 h-12 rounded-full border-2 border-orange-400 object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full border-2 border-orange-400 bg-gray-500 flex items-center justify-center text-lg font-bold">
+                {fundiName.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <h1 className="text-3xl font-extrabold">Welcome, {fundiName}</h1>
+              <div className="flex gap-6 mt-1 text-sm text-gray-300">
+                <span>⭐ {rating.toFixed(1)} / 5</span>
+                <span>📌 {jobsCompleted} Jobs Completed</span>
+                <span className="cursor-pointer" onClick={toggleAvailability}>
+                  🟢 {availability}
+                </span>
+              </div>
+            </div>
+          </div>
           <Button
             onClick={handleLogout}
             variant="destructive"
@@ -28,18 +77,50 @@ const FundiDashboard = () => {
 
         {/* Grid of Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* My Jobs */}
+          {/* My Jobs (Active) */}
           <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">
             <CardHeader>
-              <CardTitle className="text-orange-400">🔧 My Jobs</CardTitle>
+              <CardTitle className="text-orange-400">🔧 My Active Jobs</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>View and manage your assigned jobs.</p>
+              <p>View and manage your current jobs.</p>
               <Button
                 className="mt-4 bg-blue-500 hover:bg-blue-600 text-white"
-                onClick={() => nav("/fundi/jobs")}
+                onClick={() => nav("/fundi/active-jobs")}
               >
-                View Jobs
+                View Active Jobs
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Completed Jobs */}
+          <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">
+            <CardHeader>
+              <CardTitle className="text-orange-400">✅ Completed Jobs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>See all jobs you’ve successfully finished.</p>
+              <Button
+                className="mt-4 bg-blue-500 hover:bg-blue-600 text-white"
+                onClick={() => nav("/fundi/completed-jobs")}
+              >
+                View Completed Jobs
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Job Applications */}
+          <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">
+            <CardHeader>
+              <CardTitle className="text-orange-400">📄 My Applications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Track your job applications and statuses.</p>
+              <Button
+                className="mt-4 bg-blue-500 hover:bg-blue-600 text-white"
+                onClick={() => nav("/fundi/applications")}
+              >
+                View Applications
               </Button>
             </CardContent>
           </Card>
@@ -77,7 +158,6 @@ const FundiDashboard = () => {
           </Card>
 
           {/* Profile */}
-                <div className="z-10 relative">
           <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">
             <CardHeader>
               <CardTitle className="text-orange-400">👤 Profile</CardTitle>
@@ -86,18 +166,12 @@ const FundiDashboard = () => {
               <p>View and edit your fundi profile.</p>
               <Button
                 className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => {
-                  console.log("Navigating to /fundi/profile");
-                  nav("/fundi/profile");
-                }}
+                onClick={() => nav("/fundi/profile")}
               >
                 Go to Profile
               </Button>
             </CardContent>
           </Card>
-        </div>
-
-
 
           {/* Messages */}
           <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">
