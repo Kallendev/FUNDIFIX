@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import instance from "@/api/axios"; // <-- your axios instance
+import instance from "@/api/axios"; // axios instance
 
 const FundiDashboard = () => {
   const nav = useNavigate();
@@ -10,18 +10,21 @@ const FundiDashboard = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
 
       // Fetch fresh data from backend
-      instance.get(`/users/${parsedUser._id}`)
-        .then(res => {
-          setUser(res.data);
-          localStorage.setItem("user", JSON.stringify(res.data)); // update local storage
+      instance
+        .get(`/users/${parsedUser._id}`)
+        .then((res) => {
+          const freshUser = res.data;
+          setUser(freshUser);
+          localStorage.setItem("user", JSON.stringify(freshUser)); // update local storage
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Failed to fetch user data", err);
+          setUser(parsedUser); // fallback to stored data
         });
     }
   }, []);
@@ -49,8 +52,10 @@ const FundiDashboard = () => {
               <img
                 src={
                   user?.profileImage
-                    ? `${import.meta.env.VITE_API_BASE_URL}${user.profileImage}`
-                    : `https://api.dicebear.com/7.x/identicon/svg?seed=${user?.name || "Fundi"}`
+                    ? `${import.meta.env.VITE_API_BASE_URL}${user.profileImage}?v=${Date.now()}`
+                    : `https://api.dicebear.com/7.x/identicon/svg?seed=${
+                        user?.name || "Fundi"
+                      }`
                 }
                 alt="Profile"
                 className="w-full h-full object-cover"
