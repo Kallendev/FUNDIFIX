@@ -81,7 +81,7 @@ const ProfilePage = () => {
           skills: userData.skills?.join(', ') || '',
           experience: userData.experience || '',
           location: userData.location || '',
-          profileImage: userData.profileImage || null,
+          profileImage: userData.profileImage ?? null, // fixed here
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -142,7 +142,7 @@ const ProfilePage = () => {
         profileImage:
           formData.profileImage instanceof File
             ? formData.profileImage
-            : updatedUser.profileImage,
+            : updatedUser.profileImage ?? null, // fixed here
       });
 
       setImageVersion((v) => v + 1);
@@ -176,12 +176,10 @@ const ProfilePage = () => {
       <h1 className="text-3xl font-bold text-orange-400 mb-6">Fundi Profile</h1>
 
       <Card className="bg-[#1a1a1a] max-w-lg mx-auto shadow-lg rounded-2xl overflow-hidden">
-        {/* Banner */}
         <div className="h-24 bg-gradient-to-r from-[#00F0FF] to-[#00c0cc]" />
 
         <CardContent>
           <div className="flex flex-col items-center -mt-16">
-            {/* Profile Image */}
             <div
               onClick={editing ? handleImageClick : undefined}
               className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-[#00F0FF] cursor-pointer transition-all duration-300 hover:scale-105"
@@ -207,7 +205,6 @@ const ProfilePage = () => {
               accept="image/*"
             />
 
-            {/* Details */}
             {!editing ? (
               <>
                 <h2 className="text-xl font-semibold mt-4">{user.name}</h2>
