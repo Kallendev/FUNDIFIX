@@ -17,6 +17,15 @@ type User = {
   [key: string]: any;
 };
 
+// Helper to ensure all URLs are HTTPS
+const httpsUrl = (url: string) => {
+  if (!url) return url;
+  if (url.startsWith('http://')) {
+    return url.replace('http://', 'https://');
+  }
+  return url;
+};
+
 const ProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +50,11 @@ const ProfilePage = () => {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.profileImage) {
+        parsedUser.profileImage = httpsUrl(parsedUser.profileImage);
+      }
+      setUser(parsedUser);
     }
 
     const fetchUserProfile = async () => {
@@ -57,6 +70,10 @@ const ProfilePage = () => {
         });
 
         const userData: User = res.data;
+        if (userData.profileImage) {
+          userData.profileImage = httpsUrl(userData.profileImage);
+        }
+
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
 
@@ -111,24 +128,24 @@ const ProfilePage = () => {
       });
 
       const updatedUser: User = res.data.user || res.data;
-
-      const newProfileImage =
-        updatedUser.profileImage && updatedUser.profileImage.length > 0
-          ? `${import.meta.env.VITE_API_BASE_URL}${updatedUser.profileImage}`
-          : user?.profileImage || null;
+      if (updatedUser.profileImage) {
+        updatedUser.profileImage = httpsUrl(updatedUser.profileImage);
+      }
 
       setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+
       setFormData({
         skills: updatedUser.skills?.join(', ') || '',
         experience: updatedUser.experience || '',
         location: updatedUser.location || '',
-        profileImage: formData.profileImage instanceof File
-          ? formData.profileImage
-          : newProfileImage,
+        profileImage:
+          formData.profileImage instanceof File
+            ? formData.profileImage
+            : updatedUser.profileImage,
       });
 
       setImageVersion((v) => v + 1);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
       setEditing(false);
     } catch (err) {
       console.error('Error saving profile:', err);
@@ -149,9 +166,9 @@ const ProfilePage = () => {
     formData.profileImage instanceof File
       ? URL.createObjectURL(formData.profileImage)
       : typeof formData.profileImage === 'string' && formData.profileImage.length > 0
-      ? `${formData.profileImage}?v=${imageVersion}`
+      ? `${httpsUrl(formData.profileImage)}?v=${imageVersion}`
       : user?.profileImage && user.profileImage.length > 0
-      ? `${import.meta.env.VITE_API_BASE_URL}${user.profileImage}?v=${imageVersion}`
+      ? `${httpsUrl(import.meta.env.VITE_API_BASE_URL + user.profileImage)}?v=${imageVersion}`
       : `https://api.dicebear.com/7.x/identicon/svg?seed=${user?.name || 'Fundi'}`;
 
   return (
