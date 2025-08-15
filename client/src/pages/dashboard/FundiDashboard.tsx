@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import instance from "@/api/axios"; // <-- your axios instance
 
 const FundiDashboard = () => {
   const nav = useNavigate();
@@ -10,7 +11,18 @@ const FundiDashboard = () => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+      // Fetch fresh data from backend
+      instance.get(`/users/${parsedUser._id}`)
+        .then(res => {
+          setUser(res.data);
+          localStorage.setItem("user", JSON.stringify(res.data)); // update local storage
+        })
+        .catch(err => {
+          console.error("Failed to fetch user data", err);
+        });
     }
   }, []);
 
