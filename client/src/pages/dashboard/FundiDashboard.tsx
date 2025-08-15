@@ -1,10 +1,18 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-
 const FundiDashboard = () => {
   const nav = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -16,14 +24,35 @@ const FundiDashboard = () => {
       <div className="max-w-6xl mx-auto">
         {/* Top Bar */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-extrabold text-white">👷 Fundi Dashboard</h1>
-          <Button
-            onClick={handleLogout}
-            variant="destructive"
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
-            Logout
-          </Button>
+          <h1 className="text-3xl font-extrabold text-white">
+            {user?.name ? `Welcome ${user.name}` : "Welcome"}
+          </h1>
+
+          <div className="flex items-center gap-4">
+            {/* Profile Image */}
+            <div
+              className="w-12 h-12 rounded-full overflow-hidden border-2 border-orange-400 cursor-pointer"
+              onClick={() => nav("/fundi/profile")}
+            >
+              <img
+                src={
+                  user?.profileImage
+                    ? `${import.meta.env.VITE_API_BASE_URL}${user.profileImage}`
+                    : `https://api.dicebear.com/7.x/identicon/svg?seed=${user?.name || "Fundi"}`
+                }
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Logout
+            </Button>
+          </div>
         </div>
 
         {/* Grid of Cards */}
@@ -77,7 +106,6 @@ const FundiDashboard = () => {
           </Card>
 
           {/* Profile */}
-                <div className="z-10 relative">
           <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">
             <CardHeader>
               <CardTitle className="text-orange-400">👤 Profile</CardTitle>
@@ -86,18 +114,12 @@ const FundiDashboard = () => {
               <p>View and edit your fundi profile.</p>
               <Button
                 className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => {
-                  console.log("Navigating to /fundi/profile");
-                  nav("/fundi/profile");
-                }}
+                onClick={() => nav("/fundi/profile")}
               >
                 Go to Profile
               </Button>
             </CardContent>
           </Card>
-        </div>
-
-
 
           {/* Messages */}
           <Card className="bg-[#1E1E1E] text-white hover:shadow-xl transition duration-300">
