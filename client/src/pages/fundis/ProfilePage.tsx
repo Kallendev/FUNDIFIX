@@ -23,11 +23,16 @@ const ProfilePage = () => {
   const [editing, setEditing] = useState(false);
   const [imageVersion, setImageVersion] = useState(0);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    skills: string;
+    experience: string;
+    location: string;
+    profileImage: File | string | null;
+  }>({
     skills: '',
     experience: '',
     location: '',
-    profileImage: null as File | string | null,
+    profileImage: null,
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -106,9 +111,10 @@ const ProfilePage = () => {
       });
 
       const updatedUser: User = res.data.user || res.data;
+
       const newProfileImage =
         updatedUser.profileImage && updatedUser.profileImage.length > 0
-          ? updatedUser.profileImage
+          ? `${import.meta.env.VITE_API_BASE_URL}${updatedUser.profileImage}`
           : user?.profileImage || null;
 
       setUser(updatedUser);
@@ -116,7 +122,9 @@ const ProfilePage = () => {
         skills: updatedUser.skills?.join(', ') || '',
         experience: updatedUser.experience || '',
         location: updatedUser.location || '',
-        profileImage: newProfileImage,
+        profileImage: formData.profileImage instanceof File
+          ? formData.profileImage
+          : newProfileImage,
       });
 
       setImageVersion((v) => v + 1);
@@ -137,86 +145,92 @@ const ProfilePage = () => {
 
   if (!user) return null;
 
-  return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white">
-      {/* Banner Section */}
-      <div className="relative h-48 bg-gradient-to-r from-orange-500 to-pink-500">
-        <div
-          onClick={editing ? handleImageClick : undefined}
-          className="absolute left-1/2 transform -translate-x-1/2 bottom-0 translate-y-1/2 w-28 h-28 rounded-full border-4 border-[#0f0f0f] overflow-hidden cursor-pointer shadow-lg"
-        >
-          <img
-            src={
-              formData.profileImage instanceof File
-                ? URL.createObjectURL(formData.profileImage)
-                : typeof formData.profileImage === 'string' && formData.profileImage.length > 0
-                ? `${import.meta.env.VITE_API_BASE_URL}${formData.profileImage}?v=${imageVersion}`
-                : user?.profileImage && user.profileImage.length > 0
-                ? `${import.meta.env.VITE_API_BASE_URL}${user.profileImage}?v=${imageVersion}`
-                : `https://api.dicebear.com/7.x/identicon/svg?seed=${user?.name || 'Fundi'}`
-            }
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
-          {editing && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <Plus className="text-white w-8 h-8" />
-            </div>
-          )}
-        </div>
-        <input
-          type="file"
-          name="profileImage"
-          ref={fileInputRef}
-          onChange={handleChange}
-          className="hidden"
-          accept="image/*"
-        />
-      </div>
+  const profileImageSrc =
+    formData.profileImage instanceof File
+      ? URL.createObjectURL(formData.profileImage)
+      : typeof formData.profileImage === 'string' && formData.profileImage.length > 0
+      ? `${formData.profileImage}?v=${imageVersion}`
+      : user?.profileImage && user.profileImage.length > 0
+      ? `${import.meta.env.VITE_API_BASE_URL}${user.profileImage}?v=${imageVersion}`
+      : `https://api.dicebear.com/7.x/identicon/svg?seed=${user?.name || 'Fundi'}`;
 
-      {/* Profile Card */}
-      <div className="max-w-2xl mx-auto mt-20 px-4">
-        <Card className="bg-[#1a1a1a] rounded-2xl shadow-xl p-6">
-          <CardContent className="text-center">
+  return (
+    <div className="min-h-screen bg-[#0f0f0f] text-white p-6">
+      <h1 className="text-3xl font-bold text-orange-400 mb-6">Fundi Profile</h1>
+
+      <Card className="bg-[#1a1a1a] max-w-lg mx-auto shadow-lg rounded-2xl overflow-hidden">
+        {/* Banner */}
+        <div className="h-24 bg-gradient-to-r from-[#00F0FF] to-[#00c0cc]" />
+
+        <CardContent>
+          <div className="flex flex-col items-center -mt-16">
+            {/* Profile Image */}
+            <div
+              onClick={editing ? handleImageClick : undefined}
+              className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-[#00F0FF] cursor-pointer transition-all duration-300 hover:scale-105"
+            >
+              <img
+                src={profileImageSrc}
+                alt="Profile"
+                className="w-full h-full object-cover opacity-0 animate-fadeIn"
+              />
+              {editing && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <Plus className="text-white w-8 h-8" />
+                </div>
+              )}
+            </div>
+
+            <input
+              type="file"
+              name="profileImage"
+              ref={fileInputRef}
+              onChange={handleChange}
+              className="hidden"
+              accept="image/*"
+            />
+
+            {/* Details */}
             {!editing ? (
               <>
-                <h2 className="text-2xl font-bold">{user.name}</h2>
+                <h2 className="text-xl font-semibold mt-4">{user.name}</h2>
                 <p className="text-gray-400">{user.email}</p>
-                {user.role && (
-                  <span className="inline-block mt-2 px-3 py-1 text-sm rounded-full bg-orange-400 text-black font-semibold">
-                    {user.role.toUpperCase()}
-                  </span>
-                )}
-                <div className="mt-6 space-y-2 text-left">
-                  <p><strong>Skills:</strong> {user.skills?.join(', ') || 'N/A'}</p>
-                  <p><strong>Experience:</strong> {user.experience || 'N/A'}</p>
-                  <p><strong>Location:</strong> {user.location || 'N/A'}</p>
-                  <p><strong>Joined:</strong> {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
+                <p
+                  className="px-3 py-1 rounded-full text-sm mt-2"
+                  style={{ backgroundColor: '#00F0FF', color: '#000' }}
+                >
+                  {user.role?.toUpperCase()}
+                </p>
+                <div className="mt-4 space-y-1 text-sm text-gray-400">
+                  <p><span className="text-white">Skills:</span> {user.skills?.join(', ') || 'N/A'}</p>
+                  <p><span className="text-white">Experience:</span> {user.experience || 'N/A'}</p>
+                  <p><span className="text-white">Location:</span> {user.location || 'N/A'}</p>
+                  <p><span className="text-white">Joined on:</span> {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
                 </div>
                 <Button
                   onClick={() => setEditing(true)}
-                  className="mt-6 bg-orange-400 hover:bg-orange-500 text-black px-6 py-2 rounded-xl"
+                  className="mt-5 bg-orange-400 hover:bg-orange-500 text-black px-4 py-2 rounded-xl"
                 >
                   Edit Profile
                 </Button>
               </>
             ) : (
-              <div className="space-y-4">
+              <div className="w-full space-y-3 mt-4">
                 <input
                   type="text"
                   name="skills"
                   value={formData.skills}
                   onChange={handleChange}
                   placeholder="Skills (comma separated)"
-                  className="w-full bg-[#0f0f0f] text-white border border-gray-700 rounded-lg p-3"
+                  className="w-full bg-[#0f0f0f] text-white border border-gray-700 rounded-lg p-2"
                 />
                 <input
                   type="text"
                   name="experience"
                   value={formData.experience}
                   onChange={handleChange}
-                  placeholder="Experience"
-                  className="w-full bg-[#0f0f0f] text-white border border-gray-700 rounded-lg p-3"
+                  placeholder="Experience (e.g., 5 years)"
+                  className="w-full bg-[#0f0f0f] text-white border border-gray-700 rounded-lg p-2"
                 />
                 <input
                   type="text"
@@ -224,28 +238,28 @@ const ProfilePage = () => {
                   value={formData.location}
                   onChange={handleChange}
                   placeholder="Location"
-                  className="w-full bg-[#0f0f0f] text-white border border-gray-700 rounded-lg p-3"
+                  className="w-full bg-[#0f0f0f] text-white border border-gray-700 rounded-lg p-2"
                 />
-                <div className="flex gap-3 justify-center">
+                <div className="flex gap-3">
                   <Button
                     onClick={handleSave}
                     style={{ backgroundColor: '#00F0FF', color: '#000' }}
-                    className="px-6 py-2 rounded-xl"
+                    className="px-4 py-2 rounded-xl"
                   >
                     Save
                   </Button>
                   <Button
                     onClick={() => setEditing(false)}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-xl"
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-xl"
                   >
                     Cancel
                   </Button>
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
