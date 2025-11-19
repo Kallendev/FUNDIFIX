@@ -190,12 +190,15 @@ const updateUserProfile = async (req, res) => {
       }
     }
 
-    // ✅ Experience & Location
+    // ✅ Experience & Location & Phone
     if (req.body.experience?.trim()) {
       user.experience = req.body.experience.trim();
     }
     if (req.body.location?.trim()) {
       user.location = req.body.location.trim();
+    }
+    if (req.body.phone?.trim()) {
+      user.phone = req.body.phone.trim();
     }
 
     // ✅ Profile Image (absolute URL)
@@ -233,6 +236,52 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const rateUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { rating, comment } = req.body;
+    const raterUserId = req.user.userId;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const existingRating = user.ratings.find(
+      r => r.ratedBy.toString() === raterUserId
+    );
+
+    if (existingRating) {
+      existingRating.rating = rating;
+      existingRating.comment = comment || '';
+      existingRating.createdAt = new Date();
+    } else {
+      user.ratings.push({
+        ratedBy: raterUserId,
+        rating,
+        comment: comment || '',
+      });
+    }
+
+    const totalRatings = user.ratings.reduce((sum, r) => sum + r.rating, 0);
+    user.averageRating = totalRatings / user.ratings.length;
+
+    await user.save();
+
+    res.json({
+      message: 'Rating submitted successfully',
+      averageRating: user.averageRating,
+      totalRatings: user.ratings.length
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -243,5 +292,6 @@ module.exports = {
   getUserProfile,
   updateUser,
   updateUserProfile,
-  deleteUser
+  deleteUser,
+  rateUser
 };

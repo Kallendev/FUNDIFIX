@@ -1,4 +1,5 @@
 const Job = require('../models/Job.js');
+const User = require('../models/User.js');
 
 // CREATE JOB — allowed for clients
 const createJob = async (req, res) => {
@@ -27,6 +28,11 @@ const createJob = async (req, res) => {
     });
 
     await job.save();
+
+    await User.findByIdAndUpdate(req.user.userId, {
+      $inc: { jobsPosted: 1 }
+    });
+
     res.status(201).json({ message: 'Job created successfully', job });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -85,13 +91,20 @@ const updateJob = async (req, res) => {
       return res.status(404).json({ message: 'Job not found' });
     }
 
-    if (job.createdBy.toString() !== req.user.userId) {
+    if (job.createdBy.toString() !== req.user.userId && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this job' });
     }
 
+    const previousStatus = job.status;
     const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
+
+    if (previousStatus !== 'completed' && req.body.status === 'completed' && updatedJob.assignedTo) {
+      await User.findByIdAndUpdate(updatedJob.assignedTo, {
+        $inc: { jobsCompleted: 1 }
+      });
+    }
 
     res.status(200).json({ message: 'Job updated successfully', job: updatedJob });
   } catch (err) {
@@ -118,11 +131,39 @@ const deleteJob = async (req, res) => {
   }
 };
 
+const applyForJob = async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const fundiId = req.user.userId;
+
+    if (req.user.role !== 'fundi') {
+      return res.status(403).json({ message: 'Only fundis can apply for jobs' });
+    }
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    if (job.applicants.includes(fundiId)) {
+      return res.status(400).json({ message: 'You have already applied for this job' });
+    }
+
+    job.applicants.push(fundiId);
+    await job.save();
+
+    res.status(200).json({ message: 'Application submitted successfully', job });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   createJob,
   getAllJobs,
   getJobById,
   updateJob,
   deleteJob,
-  getJobsByClient, // Export the new function
+  getJobsByClient,
+  applyForJob,
 };

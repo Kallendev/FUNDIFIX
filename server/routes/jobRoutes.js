@@ -7,7 +7,8 @@ const {
   getJobById,
   getJobsByClient,
   updateJob,
-  deleteJob
+  deleteJob,
+  applyForJob
 } = require('../controllers/jobControllers');
 
 const { authenticateToken } = require('../middlewares/authorizerAdmin');
@@ -19,6 +20,7 @@ router.get('/client/my-jobs', authenticateToken, getJobsByClient);
 
 // ✅ Protected routes (any logged-in user)
 router.post('/', authenticateToken, createJob);
+router.post('/:id/apply', authenticateToken, applyForJob);
 
 // ✅ Optional: Only creator or admin can update/delete
 router.put('/:id', authenticateToken, updateJob);

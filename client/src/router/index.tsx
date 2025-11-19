@@ -8,6 +8,9 @@ import LandingPage from '@/pages/landing/LandingPage'
 import FundiPage from '@/pages/fundis/FundiPage'
 import ProfilePage from '@/pages/fundis/ProfilePage'
 import JobPage from '@/pages/jobs/JobPage'
+import AdminJobsPage from '@/pages/dashboard/AdminJobsPage'
+import AdminFundisPage from '@/pages/dashboard/AdminFundisPage'
+import AdminClientsPage from '@/pages/dashboard/AdminClientsPage'
 
 export const router = createBrowserRouter([
   { path: '/', element: <LandingPage /> },
@@ -18,6 +21,11 @@ export const router = createBrowserRouter([
   { path: '/admin', element: <AdminDashboard /> },
   { path: '/client', element: <ClientDashboard /> },
   { path: '/fundi', element: <FundiDashboard /> },
+
+  // Admin pages
+  { path: '/admin/jobs', element: <AdminJobsPage /> },
+  { path: '/admin/fundis', element: <AdminFundisPage /> },
+  { path: '/admin/clients', element: <AdminClientsPage /> },
 
   // Fundi-specific pages
   { path: '/fundi/profile', element: <ProfilePage /> },

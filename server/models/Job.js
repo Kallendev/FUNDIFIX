@@ -11,8 +11,9 @@ const jobSchema = new mongoose.Schema({
     enum: ['open', 'assigned', 'completed'],
     default: 'open',
   },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // client
-  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // fundi
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Job', jobSchema);

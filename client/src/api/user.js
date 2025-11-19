@@ -22,7 +22,7 @@ export const loginUser = async (credentials) => {
 // ✅ Update user profile (with image upload)
 export const updateUserProfile = async (data) => {
   const formData = new FormData();
-  
+
   if (data.profileImage) {
     formData.append('profileImage', data.profileImage);
   }
@@ -36,5 +36,14 @@ export const updateUserProfile = async (data) => {
   });
 
   return response.data;
+};
+
+export const rateUser = async (userId, ratingData) => {
+  try {
+    const response = await instance.post(`/users/${userId}/rate`, ratingData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to submit rating' };
+  }
 };
 

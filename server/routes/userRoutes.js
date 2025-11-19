@@ -11,7 +11,8 @@ const {
   getAllFundis,
   updateUserProfile,
   getAllClients,
-  getUserProfile
+  getUserProfile,
+  rateUser
 } = require('../controllers/userControllers');
 
 const { authenticateToken, authorizeAdmin } = require('../middlewares/authorizerAdmin');
@@ -54,5 +55,7 @@ router.put(
 router.get('/:id', authenticateToken, getUserById);
 router.put('/:id', authenticateToken, updateUser);
 router.delete('/:id', authenticateToken, authorizeAdmin, deleteUser);
+
+router.post('/:userId/rate', authenticateToken, rateUser);
 
 module.exports = router;
